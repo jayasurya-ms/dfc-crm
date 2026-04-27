@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Layout from "../../../layout/Layout";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import BASE_URL from "../../../base/BaseUrl";
 import axios from "axios";
@@ -12,6 +12,7 @@ import {
 
 const CreateCompany = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [company, setCompany] = useState({
     company_short: "",
     company_name: "",
@@ -95,7 +96,7 @@ const CreateCompany = () => {
       } else if (res.data.code == 400) {
         toast.error(res.data.msg);
       }
-      navigate("/master/company-list");
+      navigate(`/master/company-list${location?.search}`);
       setCompany({
         company_short: "",
         company_name: "",
@@ -129,7 +130,9 @@ const CreateCompany = () => {
               <span>Add Company </span>
             </div>
             <IconArrowBack
-              onClick={() => navigate("/master/company-list")}
+              onClick={() =>
+                navigate(`/master/company-list${location?.search}`)
+              }
               className="cursor-pointer hover:text-red-600"
             />
           </h2>
@@ -249,7 +252,7 @@ const CreateCompany = () => {
               type="button"
               className={BackButton}
               onClick={() => {
-                navigate("/master/company-list");
+                navigate(`/master/company-list${location?.search}`);
               }}
             >
               Back

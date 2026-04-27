@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../../layout/Layout";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import BASE_URL from "../../../base/BaseUrl";
 import { toast } from "sonner";
@@ -26,6 +26,7 @@ const vehicleType = [
 ];
 const CreateDriver = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [driver, setDriver] = useState({
     full_name: "",
     email: "",
@@ -172,7 +173,7 @@ const CreateDriver = () => {
       } else if (res.data.code == 400) {
         toast.error(res.data.msg);
       }
-      navigate("/master/driver-list");
+      navigate(`/master/driver-list${location?.search}`);
       setDriver({
         full_name: "",
         email: "",
@@ -221,7 +222,7 @@ const CreateDriver = () => {
               <span>Add Driver </span>
             </div>
             <IconArrowBack
-              onClick={() => navigate("/master/driver-list")}
+              onClick={() => navigate(`/master/driver-list${location?.search}`)}
               className="cursor-pointer hover:text-red-600"
             />
           </h2>
@@ -518,7 +519,7 @@ const CreateDriver = () => {
               type="button"
               className={BackButton}
               onClick={() => {
-                navigate("/master/driver-list");
+                navigate(`/master/driver-list${location?.search}`);
               }}
             >
               Back

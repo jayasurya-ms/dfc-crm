@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Layout from "../../../layout/Layout";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import BASE_URL from "../../../base/BaseUrl";
 import axios from "axios";
 import { toast } from "sonner";
@@ -30,6 +30,7 @@ const salaryType = [
 ];
 const CreateBranch = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [branch, setBranch] = useState({
     branch_name: "",
     branch_salary_type: "",
@@ -163,7 +164,7 @@ const CreateBranch = () => {
       } else if (res.data.code == 400) {
         toast.error(res.data.msg);
       }
-      navigate("/master/branch-list");
+      navigate(`/master/branch-list${location?.search}`);
       setBranch({
         branch_name: "",
         branch_salary_type: "",
@@ -200,7 +201,7 @@ const CreateBranch = () => {
               <span>Add Branch </span>
             </div>
             <IconArrowBack
-              onClick={() => navigate("/master/branch-list")}
+              onClick={() => navigate(`/master/branch-list${location?.search}`)}
               className="cursor-pointer hover:text-red-600"
             />
           </h2>
@@ -365,7 +366,7 @@ const CreateBranch = () => {
               type="button"
               className={BackButton}
               onClick={() => {
-                navigate("/master/branch-list");
+                navigate(`/master/branch-list${location?.search}`);
               }}
             >
               Back

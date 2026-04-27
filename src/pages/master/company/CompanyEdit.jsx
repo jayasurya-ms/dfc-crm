@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Layout from "../../../layout/Layout";
 import axios from "axios";
 import BASE_URL from "../../../base/BaseUrl";
@@ -27,6 +27,7 @@ const CompanyEdit = () => {
   const decryptedId = decryptId(id);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const [company, setCompany] = useState({
     company_short: "",
     company_name: "",
@@ -48,7 +49,7 @@ const CompanyEdit = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setCompany(response.data?.company);
@@ -120,7 +121,7 @@ const CompanyEdit = () => {
       } else if (res.data.code == 400) {
         toast.error(res.data.msg);
       }
-      navigate("/master/company-list");
+      navigate(`/master/company-list${location?.search}`);
     });
   };
 
@@ -145,7 +146,9 @@ const CompanyEdit = () => {
               <span>Edit Company </span>
             </div>
             <IconArrowBack
-              onClick={() => navigate("/master/company-list")}
+              onClick={() =>
+                navigate(`/master/company-list${location?.search}`)
+              }
               className="cursor-pointer hover:text-red-600"
             />
           </h2>
@@ -283,7 +286,7 @@ const CompanyEdit = () => {
               type="button"
               className={BackButton}
               onClick={() => {
-                navigate("/master/company-list");
+                navigate(`/master/company-list${location?.search}`);
               }}
             >
               Back

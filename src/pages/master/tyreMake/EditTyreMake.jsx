@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../../layout/Layout";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { IconArrowBack, IconInfoCircle } from "@tabler/icons-react";
 import axios from "axios";
 import BASE_URL from "../../../base/BaseUrl";
@@ -27,6 +27,7 @@ const EditTyreMake = () => {
   const decryptedId = decryptId(id);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const [tyreMake, setTyreMake] = useState({
     tyre_make: "",
     tyre_make_status: "",
@@ -42,7 +43,7 @@ const EditTyreMake = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setTyreMake(response.data?.tyreMake);
@@ -92,7 +93,7 @@ const EditTyreMake = () => {
       } else if (res.data.code == 400) {
         toast.error(res.data.msg);
       }
-      navigate("/master/tyremake-list");
+      navigate(`/master/tyremake-list${location.search}`);
     });
   };
 
@@ -116,7 +117,9 @@ const EditTyreMake = () => {
               <span>Edit TyreMake</span>
             </div>
             <IconArrowBack
-              onClick={() => navigate("/master/tyremake-list")}
+              onClick={() =>
+                navigate(`/master/tyremake-list${location.search}`)
+              }
               className="cursor-pointer hover:text-red-600"
             />
           </h2>
@@ -172,9 +175,9 @@ const EditTyreMake = () => {
             <button
               type="button"
               className={BackButton}
-              onClick={() => {
-                navigate("/master/tyremake-list");
-              }}
+              onClick={() =>
+                navigate(`/master/tyremake-list${location.search}`)
+              }
             >
               Back
             </button>

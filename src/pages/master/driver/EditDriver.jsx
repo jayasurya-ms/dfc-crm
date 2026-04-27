@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../../layout/Layout";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import BASE_URL from "../../../base/BaseUrl";
 import { toast } from "sonner";
@@ -41,6 +41,7 @@ const EditDriver = () => {
   const decryptedId = decryptId(id);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const [driver, setDriver] = useState({
     full_name: "",
     email: "",
@@ -85,7 +86,7 @@ const EditDriver = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setDriver(response.data?.driver);
@@ -209,7 +210,7 @@ const EditDriver = () => {
       } else if (res.data.code == 400) {
         toast.error(res.data.msg);
       }
-      navigate("/master/driver-list");
+      navigate(`/master/driver-list${location?.search}`);
     });
   };
 
@@ -234,7 +235,7 @@ const EditDriver = () => {
               <span>Edit Driver </span>
             </div>
             <IconArrowBack
-              onClick={() => navigate("/master/driver-list")}
+              onClick={() => navigate(`/master/driver-list${location?.search}`)}
               className="cursor-pointer hover:text-red-600"
             />
           </h2>
@@ -563,7 +564,7 @@ const EditDriver = () => {
               type="button"
               className={BackButton}
               onClick={() => {
-                navigate("/master/driver-list");
+                navigate(`/master/driver-list${location?.search}`);
               }}
             >
               Back

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../../layout/Layout";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import BASE_URL from "../../../base/BaseUrl";
 import { toast } from "sonner";
@@ -23,6 +23,7 @@ const userType = [
 
 const CreateTeam = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [team, setTeam] = useState({
     full_name: "",
     email: "",
@@ -169,7 +170,7 @@ const CreateTeam = () => {
       } else if (res.data.code == 400) {
         toast.error(res.data.msg);
       }
-      navigate("/master/team-list");
+      navigate(`/master/team-list${location?.search}`);
       setTeam({
         full_name: "",
         email: "",
@@ -215,7 +216,7 @@ const CreateTeam = () => {
               <span>Add Team </span>
             </div>
             <IconArrowBack
-              onClick={() => navigate("/master/team-list")}
+              onClick={() => navigate(`/master/team-list${location?.search}`)}
               className="cursor-pointer hover:text-red-600"
             />
           </h2>
@@ -478,7 +479,7 @@ const CreateTeam = () => {
               type="button"
               className={BackButton}
               onClick={() => {
-                navigate("/master/team-list");
+                navigate(`/master/team-list${location?.search}`);
               }}
             >
               Back

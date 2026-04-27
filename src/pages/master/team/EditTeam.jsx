@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../../layout/Layout";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import BASE_URL from "../../../base/BaseUrl";
 import axios from "axios";
 import { toast } from "sonner";
@@ -38,6 +38,7 @@ const EditTeam = () => {
   const decryptedId = decryptId(id);
 
   const navigate = useNavigate();
+  const location = useLocation();
   const [team, setTeam] = useState({
     full_name: "",
     email: "",
@@ -79,7 +80,7 @@ const EditTeam = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setTeam(response.data?.team);
@@ -208,7 +209,7 @@ const EditTeam = () => {
       } else if (res.data.code == 400) {
         toast.error(res.data.msg);
       }
-      navigate("/master/team-list");
+      navigate(`/master/team-list${location?.search}`);
     });
   };
 
@@ -233,7 +234,7 @@ const EditTeam = () => {
               <span>Edit Team </span>
             </div>
             <IconArrowBack
-              onClick={() => navigate("/master/team-list")}
+              onClick={() => navigate(`/master/team-list${location?.search}`)}
               className="cursor-pointer hover:text-red-600"
             />
           </h2>
@@ -530,7 +531,7 @@ const EditTeam = () => {
               type="button"
               className={BackButton}
               onClick={() => {
-                navigate("/master/team-list");
+                navigate(`/master/team-list${location?.search}`);
               }}
             >
               Back
