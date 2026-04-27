@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../../layout/Layout";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import axios from "axios";
 import BASE_URL from "../../../base/BaseUrl";
 import { toast } from "sonner";
@@ -46,6 +46,8 @@ const BrandEdit = () => {
   const decryptedId = decryptId(id);
 
   const navigate = useNavigate();
+  const location = useLocation();
+
   const [branch, setBranch] = useState({
     branch_name: "",
     branch_salary_type: "",
@@ -70,7 +72,7 @@ const BrandEdit = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setBranch(response.data?.branch);
@@ -204,7 +206,7 @@ const BrandEdit = () => {
       } else if (res.data.code == 400) {
         toast.error(res.data.msg);
       }
-      navigate("/master/branch-list");
+      navigate(`/master/branch-list${location?.search}`);
     });
   };
 
@@ -229,7 +231,7 @@ const BrandEdit = () => {
               <span>Edit Branch </span>
             </div>
             <IconArrowBack
-              onClick={() => navigate("/master/branch-list")}
+              onClick={() => navigate(`/master/branch-list${location?.search}`)}
               className="cursor-pointer hover:text-red-600"
             />
           </h2>
@@ -415,7 +417,7 @@ const BrandEdit = () => {
               type="button"
               className={BackButton}
               onClick={() => {
-                navigate("/master/branch-list");
+                navigate(`/master/branch-list${location?.search}`);
               }}
             >
               Back

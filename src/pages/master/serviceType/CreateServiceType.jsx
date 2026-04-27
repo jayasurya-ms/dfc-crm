@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import Layout from "../../../layout/Layout";
 import { IconArrowBack, IconInfoCircle } from "@tabler/icons-react";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import BASE_URL from "../../../base/BaseUrl";
 import axios from "axios";
 
 const CreateServiceType = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [serviceTypes, setServiceTypes] = useState({
     service_types: "",
   });
@@ -47,7 +48,7 @@ const CreateServiceType = () => {
       } else if (res.data.code == 400) {
         toast.error(res.data.msg);
       }
-      navigate("/master/servicetype-list");
+      navigate(`/master/servicetype-list${location?.search}`);
       setServiceTypes({
         service_types: "",
       });
@@ -73,7 +74,9 @@ const CreateServiceType = () => {
               <span>Add Service Type</span>
             </div>
             <IconArrowBack
-              onClick={() => navigate("/master/servicetype-list")}
+              onClick={() =>
+                navigate(`/master/servicetype-list${location?.search}`)
+              }
               className="cursor-pointer hover:text-red-600"
             />
           </h2>
@@ -112,7 +115,7 @@ const CreateServiceType = () => {
               type="button"
               className="text-center text-sm font-[400] cursor-pointer  w-36 text-white bg-red-600 hover:bg-red-400 p-2 rounded-lg shadow-md"
               onClick={() => {
-                navigate("/master/servicetype-list");
+                navigate(`/master/servicetype-list${location?.search}`);
               }}
             >
               Back

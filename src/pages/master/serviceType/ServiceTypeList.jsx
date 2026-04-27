@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Layout from "../../../layout/Layout";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import BASE_URL from "../../../base/BaseUrl";
 import { IconEdit, IconPlus } from "@tabler/icons-react";
@@ -15,7 +15,38 @@ import { encryptId } from "../../../components/common/EncryptionDecryption";
 const ServiceTypeList = () => {
   const [serviceTypeData, setServiceTypeData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showSearch, setShowSearch] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [isViewExpanded, setIsViewExpanded] = useState(false);
+  const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+
+  const pageQuery = searchParams.get("page") || "1";
+  const initialPageIndex = parseInt(pageQuery, 10) - 1;
+  const searchQuery = searchParams.get("search") || "";
+
+  const [globalFilter, setGlobalFilter] = useState(searchQuery);
+  const [pagination, setPagination] = useState({
+    pageIndex: initialPageIndex,
+    pageSize: 10,
+  });
+
+  // Sync URL with state (for browser back/forward and initial load)
+  useEffect(() => {
+    const search = searchParams.get("search") || "";
+    const page = parseInt(searchParams.get("page") || "1", 10) - 1;
+
+    if (search !== globalFilter) {
+      setGlobalFilter(search);
+    }
+    if (page !== pagination.pageIndex) {
+      setPagination((prev) => ({
+        ...prev,
+        pageIndex: page,
+      }));
+    }
+  }, [searchParams]);
 
   const fetchServiceTypeData = async () => {
     try {
@@ -27,7 +58,7 @@ const ServiceTypeList = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setServiceTypeData(response.data?.serviceTypes);
@@ -86,11 +117,11 @@ const ServiceTypeList = () => {
                 // onClick={() => navigate(`/master/servicetype-edit/${id}`)}
                 onClick={() => {
                   const encryptedId = encryptId(id);
-
+                  const searchStr = searchParams.toString();
                   navigate(
                     `/master/servicetype-edit/${encodeURIComponent(
-                      encryptedId
-                    )}`
+                      encryptedId,
+                    )}${searchStr ? `?${searchStr}` : ""}`,
                   );
                 }}
                 className="flex items-center space-x-2"
@@ -100,7 +131,7 @@ const ServiceTypeList = () => {
         },
       },
     ],
-    []
+    [location.search, navigate],
   );
 
   const table = useMantineReactTable({
@@ -112,9 +143,63 @@ const ServiceTypeList = () => {
     enableHiding: false,
     enableStickyHeader: true,
     enableStickyFooter: true,
-    mantineTableContainerProps: { sx: { maxHeight: "400px" } },
+    state: {
+      showGlobalFilter: showSearch,
+      globalFilter,
+      pagination,
+    },
+    onShowGlobalFilterChange: setShowSearch,
+    onGlobalFilterChange: (value) => {
+      const nextFilter = value || "";
+      if (nextFilter !== globalFilter) {
+        setGlobalFilter(nextFilter);
+        const params = new URLSearchParams(searchParams);
+        if (nextFilter) {
+          params.set("search", nextFilter);
+        } else {
+          params.delete("search");
+        }
+        params.set("page", "1");
+        setSearchParams(params, { replace: true });
+      }
+    },
+    onPaginationChange: (updater) => {
+      setPagination((prev) => {
+        const next = typeof updater === "function" ? updater(prev) : updater;
 
-    initialState: { columnVisibility: { address: false } },
+        // CRITICAL GUARD: If the table tries to reset to page 1 (index 0)
+        // while we are still loading data or have no data yet, IGNORE IT
+        // if the current URL/state expects us to be on a higher page.
+        if (next.pageIndex === 0 && prev.pageIndex > 0) {
+          if (!serviceTypeData || serviceTypeData.length === 0) {
+            return prev; // Ignore the reset from the table
+          }
+        }
+
+        // Only update URL if it's an actual change
+        if (next.pageIndex !== prev.pageIndex) {
+          const params = new URLSearchParams(searchParams);
+          params.set("page", (next.pageIndex + 1).toString());
+          setSearchParams(params, { replace: true });
+        }
+        return next;
+      });
+    },
+    autoResetPagination: false,
+    autoResetGlobalFilter: false,
+    autoResetAll: false,
+    mantineSearchTextInputProps: {
+      autoFocus: true,
+    },
+    mantineTableContainerProps: { sx: { maxHeight: "400px" } },
+    enableColumnFilters: false,
+    initialState: {
+      columnVisibility: { address: false },
+      pagination: {
+        pageIndex: initialPageIndex,
+        pageSize: 10,
+      },
+    },
   });
 
   return (
@@ -134,7 +219,12 @@ const ServiceTypeList = () => {
                 <IconPlus className="w-4 h-4" /> Service Type
               </button> */}
               <MasterServiceTypeCreate
-                onClick={() => navigate("/master/createServicetype")}
+                onClick={() => {
+                  const searchStr = searchParams.toString();
+                  navigate(
+                    `/master/createServicetype${searchStr ? `?${searchStr}` : ""}`,
+                  );
+                }}
                 className={`${CreateButton} w-full`}
               />
             </div>

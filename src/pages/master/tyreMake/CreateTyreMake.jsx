@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import Layout from "../../../layout/Layout";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import BASE_URL from "../../../base/BaseUrl";
 import axios from "axios";
 import { IconArrowBack, IconInfoCircle } from "@tabler/icons-react";
-import { BackButton, CreateButton } from "../../../components/common/ButtonColors";
+import {
+  BackButton,
+  CreateButton,
+} from "../../../components/common/ButtonColors";
 
 const CreateTyreMake = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [tyreMake, setTyreMake] = useState({
     tyre_make: "",
   });
@@ -48,7 +52,7 @@ const CreateTyreMake = () => {
       } else if (res.data.code == 400) {
         toast.error(res.data.msg);
       }
-      navigate("/master/tyremake-list");
+      navigate(`/master/tyremake-list${location.search}`);
       setTyreMake({
         tyre_make: "",
       });
@@ -74,7 +78,9 @@ const CreateTyreMake = () => {
               <span>Add TyreMake</span>
             </div>
             <IconArrowBack
-              onClick={() => navigate("/master/tyremake-list")}
+              onClick={() =>
+                navigate(`/master/tyremake-list${location.search}`)
+              }
               className="cursor-pointer hover:text-red-600"
             />
           </h2>
@@ -113,7 +119,7 @@ const CreateTyreMake = () => {
               type="button"
               className={BackButton}
               onClick={() => {
-                navigate("/master/tyremake-list");
+                navigate(`/master/tyremake-list${location.search}`);
               }}
             >
               Back
